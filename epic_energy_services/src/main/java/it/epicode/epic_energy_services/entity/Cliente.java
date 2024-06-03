@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Data
@@ -40,6 +41,13 @@ public class Cliente {
     private String telefonoContatto;
 
     private String logoAziendale;
+
+    @OneToMany(mappedBy = "cliente")
+    private List<Indirizzo> indirizzi;
+
+
+    @OneToMany(mappedBy = "cliente")
+    private List<Fattura> fatture;
 
 
 }
