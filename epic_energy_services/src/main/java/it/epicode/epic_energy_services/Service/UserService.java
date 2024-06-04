@@ -30,22 +30,14 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-
-
-    @Autowired
-    private UserRepository userRepository;
-
-
+   @Autowired(required = false)
+  private UserRepository userRepository;
     @Autowired
     private Cloudinary cloudinary;
-
     @Autowired
     private JavaMailSenderImpl javaMailSenderImpl;
-
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-
 
     public User getUserByUsername(String username){
         Optional<User> userOptional =  userRepository.findByUsername(username);
@@ -57,7 +49,6 @@ public class UserService {
         }
     }
 
-
     public User getUserByEmail(String email){
         Optional<User> userOptional =  userRepository.findByEmail(email);
 
@@ -68,9 +59,14 @@ public class UserService {
         }
     }
 
-
     public Optional<User> getUserById(int id){
-        return userRepository.findById(id);
+        Optional<User> userOptional =  userRepository.findById(id);
+        if(userOptional.isPresent()){
+            return userRepository.findById(id);
+        }
+       else{
+            throw new NotFoundException("User with id: "+id+" not found");
+        }
     }
 
 
@@ -113,7 +109,7 @@ public class UserService {
 
     }
 
-    public User updateUser(User userUpdate, int id) throws UserNotFoundException {
+    public User updateUser(UserDTO userUpdate, int id) throws UserNotFoundException {
         Optional<User> userOpt = getUserById(id);
         if (userOpt.isPresent()) {
             User user = userOpt.get();

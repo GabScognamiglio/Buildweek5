@@ -15,6 +15,7 @@ public class Fattura {
     private int numeroFattura;
     private LocalDate data;
     private double importo;
+
     @Enumerated(EnumType.STRING)
     private StatoFattura statoFattura;
 

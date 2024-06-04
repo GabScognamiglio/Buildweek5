@@ -20,12 +20,16 @@ public class Indirizzo {
 
     private String cap;
 
+    @ManyToOne
+    @JoinColumn(name = "indirizzo_id")
     private Comune comune;
 
+    @Enumerated(EnumType.STRING)
     private TipoIndirizzo tipoIndirizzo;
 
     @ManyToOne
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
+
 
 }

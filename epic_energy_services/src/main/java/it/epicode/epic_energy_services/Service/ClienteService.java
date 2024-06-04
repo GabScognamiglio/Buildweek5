@@ -87,6 +87,8 @@ public class ClienteService {
             cliente.setFatturatoAnnuale(clienteDto.getFatturatoAnnuale());
             cliente.setPec(clienteDto.getPec());
 
+            
+
             List<Indirizzo> indirizzi = clienteDto.getIndirizzi().stream().map(indirizzoDto -> {
                 Indirizzo indirizzo = new Indirizzo();
                 indirizzo.setVia(indirizzoDto.getVia());

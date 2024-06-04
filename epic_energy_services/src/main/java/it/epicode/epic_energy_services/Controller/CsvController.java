@@ -17,8 +17,8 @@ public class CsvController {
 
 
 
-    @PostMapping("/upload-csv")
-    public String uploadCsv(@RequestParam("comuniFilePath") String comuniFilePath, @RequestParam("provinceFilePath") String provinceFilePath) {
+    @PostMapping("/update-csv")
+    public String updateCsv(@RequestParam("comuniFilePath") String comuniFilePath, @RequestParam("provinceFilePath") String provinceFilePath) {
         try {
             csvService.loadCsvData(comuniFilePath, provinceFilePath);
             return "CSV files data loaded successfully!";

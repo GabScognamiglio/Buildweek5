@@ -1,7 +1,5 @@
 package it.epicode.epic_energy_services.Service;
 
-
-
 import it.epicode.epic_energy_services.DTO.UserLoginDTO;
 import it.epicode.epic_energy_services.Exception.UnauthorizedException;
 import it.epicode.epic_energy_services.Security.JwtTool;
@@ -15,11 +13,8 @@ import org.springframework.stereotype.Service;
 public class AuthService {
     @Autowired
     private UserService userService;
-
     @Autowired
     private JwtTool jwtTool;
-
-
     @Autowired
     private PasswordEncoder passwordEncoder;
 

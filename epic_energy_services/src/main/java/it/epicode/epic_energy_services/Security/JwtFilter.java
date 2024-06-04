@@ -24,16 +24,10 @@ import java.util.Optional;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
-
-
     @Autowired
     private JwtTool jwtTool;
-
-
     @Autowired
     UserService userService;
-
-
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
