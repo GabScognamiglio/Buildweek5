@@ -25,10 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,6 +42,28 @@ public class ClienteService {
 
     @Autowired
     private Cloudinary cloudinary;
+
+
+
+    public List<Cliente> clientiOrderByProvinciaSedeLegale(){
+        return clienteRepository.clientiOrderByProvinciaSedeLegale();
+    }
+    public List<Cliente> clientiFilteredByFatturatoAnnuale(double fatturatoMin, double fatturatoMax){
+        return clienteRepository.clientiFilteredByFatturatoAnnuale(fatturatoMin,fatturatoMax);
+    }
+
+    public List<Cliente> getClientiByDataInserimento(LocalDate dataInserimento){
+        return clienteRepository.findByDataInserimento(dataInserimento);
+    }
+
+    public List<Cliente> getClientiByDataUltimoContatto(LocalDate dataUltimoContatto){
+        return clienteRepository.findByDataUltimoContatto(dataUltimoContatto);
+    }
+
+
+    public List<Cliente> getClientiByNameContaining(String parteDelNome){
+        return clienteRepository.findByNameContaining(parteDelNome);
+    }
 
 
     public Optional<Cliente> getClienteById(int id){

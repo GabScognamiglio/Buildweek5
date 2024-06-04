@@ -2,6 +2,7 @@ package it.epicode.epic_energy_services.Service;
 
 import it.epicode.epic_energy_services.DTO.FatturaDto;
 import it.epicode.epic_energy_services.Exception.FatturaNotFoundException;
+import it.epicode.epic_energy_services.entity.Cliente;
 import it.epicode.epic_energy_services.entity.Fattura;
 import it.epicode.epic_energy_services.repository.FatturaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,6 +21,29 @@ public class FatturaService {
 
     @Autowired
     private FatturaRepository fatturaRepository;
+
+    public List<Fattura> findFattureByCliente(Cliente cliente){
+        return fatturaRepository.findByCliente(cliente);
+    }
+
+    public List<Fattura> findFattureByStato(String stato){
+        return fatturaRepository.findByStato(stato);
+    }
+
+    public List<Fattura> findFattureByDataInserimento(LocalDate date){
+        return fatturaRepository.findByDataInserimento(date);
+    }
+
+    public List<Fattura> findFattureByAnno(int anno){
+        return fatturaRepository.findByAnno(anno);
+    }
+
+
+    public List<Fattura> findFattureByRangeImporti(double importoMin, double importoMax){
+        return fatturaRepository.fatturePerRangeDiImporti(importoMin, importoMax);
+    }
+
+
 
     public String saveFattura(FatturaDto fatturaDto) {
         Fattura fattura = new Fattura();

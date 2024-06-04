@@ -5,17 +5,21 @@ import it.epicode.epic_energy_services.DTO.FatturaDto;
 import it.epicode.epic_energy_services.Exception.BadRequestException;
 import it.epicode.epic_energy_services.Exception.ClienteNotFoundException;
 import it.epicode.epic_energy_services.Exception.FatturaNotFoundException;
+import it.epicode.epic_energy_services.Service.ClienteService;
 import it.epicode.epic_energy_services.Service.FatturaService;
 import it.epicode.epic_energy_services.entity.Cliente;
 import it.epicode.epic_energy_services.entity.Fattura;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -23,6 +27,9 @@ import java.util.Optional;
 public class FatturaController {
     @Autowired
     private FatturaService fatturaService;
+
+    @Autowired
+    private ClienteService clienteService;
 
     @PostMapping("/fatture")
     @ResponseStatus(HttpStatus.CREATED)
@@ -70,5 +77,49 @@ public class FatturaController {
     @PreAuthorize("hasAuthority('ADMIN')") //solo chi è ADMIN è autorizzato
     public String deleteFattura(@PathVariable int id) {
         return fatturaService.deleteFattura(id);
+    }
+
+    //LISTA 3
+    /*-------Q1------*/
+    @GetMapping("/fattureByCliente/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    public List<Fattura> getFattureByCliente(@PathVariable int id) {
+        Optional<Cliente> clienteOptional = clienteService.getClienteById(id);
+        if (clienteOptional.isPresent()) {
+            return fatturaService.findFattureByCliente(clienteOptional.get());
+        } else {
+            throw new ClienteNotFoundException("Cliente con ID: " + id +" non trovato");
+        }
+    }
+
+    /*-------Q2------*/
+    @GetMapping("/fattureByStato/{stato}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    public List<Fattura> getFattureByStato(@PathVariable String stato) {
+            return fatturaService.findFattureByStato(stato);
+    }
+
+    /*-------Q3------*/
+
+    @GetMapping("/fattureByDataInserimento/{dataInserimento}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    public List<Fattura> getFattureDataInserimento(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInserimento) {
+        return fatturaService.findFattureByDataInserimento(dataInserimento);
+    }
+
+    /*-------Q4------*/
+
+    @GetMapping("/fattureByAnno/{anno}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    public List<Fattura> getFattureByAnno (@PathVariable int anno) {
+        return fatturaService.findFattureByAnno(anno);
+    }
+
+    /*-------Q5------*/
+
+    @GetMapping("/fattureByRangeImporto/{importMin}/{importMax}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    public List<Fattura> getFattureByRangeImporti (@PathVariable double importMin,@PathVariable double importMax) {
+        return fatturaService.findFattureByRangeImporti(importMin, importMax);
     }
 }
