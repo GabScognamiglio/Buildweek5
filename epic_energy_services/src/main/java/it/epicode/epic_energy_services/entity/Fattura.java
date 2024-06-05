@@ -1,5 +1,6 @@
 package it.epicode.epic_energy_services.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import it.epicode.epic_energy_services.Enums.StatoFattura;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -13,6 +14,7 @@ public class Fattura {
     @Id
     @GeneratedValue
     private int numeroFattura;
+
     private LocalDate data;
     private double importo;
 
@@ -21,6 +23,7 @@ public class Fattura {
 
     @ManyToOne
     @JoinColumn(name = "cliente_id")
+    @JsonIgnore
     private Cliente cliente;
 
 }

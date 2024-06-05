@@ -19,7 +19,7 @@ public class ClienteDto {
     private String ragioneSociale;
 
     @NotBlank(message = "La partita iva non può essere vuota, mancante o composta da soli spazi")
-    private String partivaIva;
+    private String partitaIva;
 
     @Email
     @NotBlank(message = "L'email non può essere vuota, mancante o composta da soli spazi")

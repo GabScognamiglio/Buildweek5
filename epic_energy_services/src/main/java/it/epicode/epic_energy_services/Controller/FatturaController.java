@@ -44,9 +44,9 @@ public class FatturaController {
 
     @GetMapping("/fatture")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public Page<Fattura> getLaptops(@RequestParam(defaultValue = "0") int page,
+    public Page<Fattura> getAllFatture(@RequestParam(defaultValue = "0") int page,
                                     @RequestParam(defaultValue = "10") int size,
-                                    @RequestParam(defaultValue = "id") String sortBy) {
+                                    @RequestParam(defaultValue = "numeroFattura") String sortBy) {
         return fatturaService.getFatture(page, size, sortBy);
     }
 
@@ -57,7 +57,7 @@ public class FatturaController {
         if (fatturaOptional.isPresent()) {
             return fatturaOptional.get();
         } else {
-            throw new FatturaNotFoundException("Fattura con id " + id +" non trovatAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAashhhh");
+            throw new FatturaNotFoundException("Fattura con numero " + id +" non trovata");
         }
     }
 
@@ -95,16 +95,16 @@ public class FatturaController {
     /*-------Q2------*/
     @GetMapping("/fattureByStato/{stato}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public List<Fattura> getFattureByStato(@PathVariable String stato) {
-            return fatturaService.findFattureByStato(stato);
+    public List<Fattura> getFattureByStatoFattura(@PathVariable String statoFattura) {
+            return fatturaService.findFattureByStato(statoFattura);
     }
 
     /*-------Q3------*/
 
     @GetMapping("/fattureByDataInserimento/{dataInserimento}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public List<Fattura> getFattureDataInserimento(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInserimento) {
-        return fatturaService.findFattureByDataInserimento(dataInserimento);
+    public List<Fattura> getFattureDataInserimento(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
+        return fatturaService.findFattureByDataInserimento(data);
     }
 
     /*-------Q4------*/

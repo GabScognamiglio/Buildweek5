@@ -15,11 +15,16 @@ public interface FatturaRepository extends JpaRepository<Fattura, Integer> {
 
     public List<Fattura> findByCliente (Cliente cliente);
 
-    public List<Fattura> findByStato (String stato);
+    public List<Fattura> findByStatoFattura (String statoFattura);
 
-    public List<Fattura> findByDataInserimento (LocalDate dataInserimento);
+    @Query("SELECT f FROM Fattura f WHERE f.data = :data")
+    public List<Fattura> findByDataInserimento (@Param("data") LocalDate data);
 
-    @Query("SELECT f FROM Fattura f WHERE YEAR(f.dataInserimento) = :anno")
+//    @Query("SELECT f FROM Fattura f WHERE YEAR(f.dataInserimento) = :anno")
+//    public List<Fattura> findByAnno(@Param("anno") int anno);
+
+    //@Query("SELECT f FROM Fattura f WHERE f.dataInserimento BETWEEN :startDate AND :endDate")
+    @Query("SELECT f FROM Fattura f WHERE FUNCTION('YEAR', f.data) = :anno")
     public List<Fattura> findByAnno(@Param("anno") int anno);
 
 

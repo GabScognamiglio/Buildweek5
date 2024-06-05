@@ -1,9 +1,11 @@
 package it.epicode.epic_energy_services.Service;
 
 import it.epicode.epic_energy_services.DTO.FatturaDto;
+import it.epicode.epic_energy_services.Exception.ClienteNotFoundException;
 import it.epicode.epic_energy_services.Exception.FatturaNotFoundException;
 import it.epicode.epic_energy_services.entity.Cliente;
 import it.epicode.epic_energy_services.entity.Fattura;
+import it.epicode.epic_energy_services.repository.ClienteRepository;
 import it.epicode.epic_energy_services.repository.FatturaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,6 +20,8 @@ import java.util.Optional;
 
 @Service
 public class FatturaService {
+    @Autowired
+    private ClienteRepository clienteRepository;
 
     @Autowired
     private FatturaRepository fatturaRepository;
@@ -26,15 +30,17 @@ public class FatturaService {
         return fatturaRepository.findByCliente(cliente);
     }
 
-    public List<Fattura> findFattureByStato(String stato){
-        return fatturaRepository.findByStato(stato);
+    public List<Fattura> findFattureByStato(String statoFattura){
+        return fatturaRepository.findByStatoFattura(statoFattura);
     }
 
-    public List<Fattura> findFattureByDataInserimento(LocalDate date){
-        return fatturaRepository.findByDataInserimento(date);
+    public List<Fattura> findFattureByDataInserimento(LocalDate data){
+        return fatturaRepository.findByDataInserimento(data);
     }
 
     public List<Fattura> findFattureByAnno(int anno){
+       /* LocalDate startDate = LocalDate.of(anno, 1, 1);
+        LocalDate endDate = LocalDate.of(anno, 12, 31);*/
         return fatturaRepository.findByAnno(anno);
     }
 
@@ -46,14 +52,21 @@ public class FatturaService {
 
 
     public String saveFattura(FatturaDto fatturaDto) {
-        Fattura fattura = new Fattura();
-        fattura.setData(fatturaDto.getData());
-        fattura.setStatoFattura(fatturaDto.getStatoFattura());
-        fattura.setImporto(fatturaDto.getImporto());
+        Optional<Cliente> clienteOptional = clienteRepository.findById(fatturaDto.getClienteId());
+        if(clienteOptional.isPresent()){
+         Fattura fattura = new Fattura();
+                 fattura.setData(fatturaDto.getData());
+                 fattura.setStatoFattura(fatturaDto.getStatoFattura());
+                 fattura.setImporto(fatturaDto.getImporto());
+                 fattura.setCliente(clienteOptional.get());
+//                 clienteOptional.get().getFatture().add(fattura);
+//                 clienteRepository.save(c)
+                 fatturaRepository.save(fattura);
+                 return "Fattura con numero " + fattura.getNumeroFattura() + " creata correttamente.";
+        }else{
+           throw new  ClienteNotFoundException("Non è stato trovato nessun cliente con id: "+ clienteOptional.get().getId());
+        }
 
-        fatturaRepository.save(fattura);
-
-        return "Fattura con numero " + fattura.getNumeroFattura() + " creata correttamente.";
     }
 
     public Page<Fattura> getFatture(int page, int size, String sortBy) {

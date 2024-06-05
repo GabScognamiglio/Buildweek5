@@ -25,7 +25,7 @@ public interface ClienteRepository extends JpaRepository<Cliente, Integer> {
     public List<Cliente> findByDataUltimoContatto (LocalDate dataUltimoContatto);
 
 
-public List<Cliente> findByNameContaining(String like);
+public List<Cliente> findByRagioneSocialeContaining(String like);
 
 
 }

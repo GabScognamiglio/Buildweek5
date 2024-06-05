@@ -26,7 +26,11 @@ public class IndirizzoService {
     public String saveIndirizzo(IndirizzoDto indirizzoDto) {
 
         Indirizzo indirizzo = new Indirizzo();
-
+        indirizzo.setVia(indirizzoDto.getVia());
+        indirizzo.setCap(indirizzoDto.getCap());
+        indirizzo.setLocalita(indirizzoDto.getLocalita());
+        indirizzo.setCivico(indirizzoDto.getCivico());
+        indirizzo.setTipoIndirizzo(indirizzoDto.getTipoIndirizzo());
 
         indirizzoRepository.save(indirizzo);
 

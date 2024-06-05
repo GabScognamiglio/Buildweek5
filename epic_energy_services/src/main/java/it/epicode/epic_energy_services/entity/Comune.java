@@ -1,5 +1,6 @@
 package it.epicode.epic_energy_services.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -17,6 +18,7 @@ public class Comune {
     private String denominazione;
 
     @OneToMany(mappedBy = "comune")
+    @JsonIgnore
     private List<Indirizzo> indirizzi;
 
     @ManyToOne

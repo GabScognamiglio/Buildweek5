@@ -14,6 +14,7 @@ import it.epicode.epic_energy_services.Exception.UserNotFoundException;
 import it.epicode.epic_energy_services.entity.*;
 import it.epicode.epic_energy_services.repository.ClienteRepository;
 import it.epicode.epic_energy_services.repository.ComuneRepository;
+import it.epicode.epic_energy_services.repository.IndirizzoRepository;
 import it.epicode.epic_energy_services.repository.ProvinciaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -43,6 +44,9 @@ public class ClienteService {
     @Autowired
     private Cloudinary cloudinary;
 
+    @Autowired
+    private IndirizzoRepository indirizzoRepository;
+
 
 
     public List<Cliente> clientiOrderByProvinciaSedeLegale(){
@@ -62,7 +66,7 @@ public class ClienteService {
 
 
     public List<Cliente> getClientiByNameContaining(String parteDelNome){
-        return clienteRepository.findByNameContaining(parteDelNome);
+        return clienteRepository.findByRagioneSocialeContaining(parteDelNome);
     }
 
 
@@ -102,11 +106,12 @@ public class ClienteService {
             cliente.setDataInserimento(LocalDate.now());
             cliente.setEmail(clienteDto.getEmail());
             cliente.setRagioneSociale(clienteDto.getRagioneSociale());
-            cliente.setPartivaIva(clienteDto.getPartivaIva());
+            cliente.setPartitaIva(clienteDto.getPartitaIva());
             cliente.setFatturatoAnnuale(clienteDto.getFatturatoAnnuale());
             cliente.setPec(clienteDto.getPec());
+            cliente.setTelefono(clienteDto.getTelefono());
 
-            
+            clienteRepository.save(cliente);
 
             List<Indirizzo> indirizzi = clienteDto.getIndirizzi().stream().map(indirizzoDto -> {
                 Indirizzo indirizzo = new Indirizzo();
@@ -116,10 +121,12 @@ public class ClienteService {
                 indirizzo.setLocalita(indirizzoDto.getLocalita());
                 indirizzo.setCivico(indirizzoDto.getCivico());
                 indirizzo.setTipoIndirizzo(indirizzoDto.getTipoIndirizzo());
+                indirizzo.setCliente(cliente);
 
                 Optional<Comune> comuneOptional = comuneRepository.findByDenominazione(indirizzoDto.getComuneDenominazione());
                 if(comuneOptional.isPresent()){
                     indirizzo.setComune(comuneOptional.get());
+                    indirizzoRepository.save(indirizzo);
                       return indirizzo;
                 }
                 throw new NotFoundException("Comune non trovato");
@@ -127,6 +134,8 @@ public class ClienteService {
 
             cliente.setIndirizzi(indirizzi);
             clienteRepository.save(cliente);
+//            indirizzi.forEach(indirizzo -> indirizzo.setCliente(cliente));
+            //indirizzoRepository.saveAll(cliente.getIndirizzi());
             return "Cliente con id " + cliente.getId()+ " salvato correttamente";
         }
 
@@ -174,7 +183,7 @@ public class ClienteService {
             cliente.setDataInserimento(LocalDate.now());
             cliente.setEmail(clienteDto.getEmail());
             cliente.setRagioneSociale(clienteDto.getRagioneSociale());
-            cliente.setPartivaIva(clienteDto.getPartivaIva());
+            cliente.setPartitaIva(clienteDto.getPartitaIva());
             cliente.setFatturatoAnnuale(clienteDto.getFatturatoAnnuale());
             cliente.setPec(clienteDto.getPec());
 
@@ -190,13 +199,16 @@ public class ClienteService {
                 Optional<Comune> comuneOptional = comuneRepository.findByDenominazione(indirizzoDto.getComuneDenominazione());
                 if (comuneOptional.isPresent()) {
                     indirizzo.setComune(comuneOptional.get());
+                    indirizzoRepository.save(indirizzo);
                     return indirizzo;
                 }
-                throw new NotFoundException("Comune non trovato");
+                else {throw new NotFoundException("Comune non trovato");}
             }).collect(Collectors.toList());
 
             cliente.setIndirizzi(indirizzi);
             clienteRepository.save(cliente);
+            indirizzoRepository.saveAll(cliente.getIndirizzi());
+
             return cliente;
         } else {
             throw new ClienteNotFoundException("Nessun cliente trovato con ID: " + id);

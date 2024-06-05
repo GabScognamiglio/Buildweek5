@@ -24,5 +24,6 @@ public class IndirizzoDto {
     @Min(value = 1)
     private int civico;
 
+    @NotBlank(message = "il tipo indirizzo non può essere vuoto, mancante o composto da soli spazi")
     private TipoIndirizzo tipoIndirizzo;
 }

@@ -15,7 +15,7 @@ public class Cliente {
     private int id;
     private String ragioneSociale;
 
-    private String partivaIva;
+    private String partitaIva;
 
     private String email;
 
