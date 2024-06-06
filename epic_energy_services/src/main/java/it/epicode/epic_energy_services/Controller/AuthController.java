@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "*")
 public class AuthController {
     @Autowired
     UserService userService;
@@ -22,6 +21,7 @@ public class AuthController {
     @Autowired
     AuthService authService;
     @PostMapping("/signup")
+    @CrossOrigin(origins = "*")
     public String signup(@RequestBody @Validated UserDTO userDTO, BindingResult bindingResult){
         if (bindingResult.hasErrors()){
             throw new BadRequestException(bindingResult.getAllErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).reduce("",(s, s2) -> s+s2 ));
@@ -31,6 +31,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @CrossOrigin(origins = "*")
     public AuthenticationResponse login(@RequestBody @Validated UserLoginDTO userLoginDTO, BindingResult bindingResult){
         if (bindingResult.hasErrors()){
             throw new BadRequestException(bindingResult.getAllErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).reduce("",(s, s2) -> s+s2 ));

@@ -15,8 +15,12 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.security.config.annotation.web.configuration.*;
 
+import java.util.Arrays;
 import java.util.List;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity(debug = true) //con debug true, nel caso di errori ci darà ancora piu info riguardo l'errore
@@ -26,40 +30,33 @@ public class SecurityConfig {
     //disabilitiamo alcuni filtri, tipo l'autenticazione con il form, csrf(protezione contro accessi impropri), sessionManagement
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.formLogin(e->e.disable()); // SENZA FRONT END SI BLOCCA
-        httpSecurity.csrf(e->e.disable());
-        httpSecurity.sessionManagement(e->e.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // SENZA FRONT END SI BLOCCA
+        httpSecurity
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> {
+                    auth.requestMatchers("/api/**").permitAll();
+                    auth.requestMatchers(HttpMethod.POST, "/auth/**").permitAll();
+                    auth.anyRequest().authenticated();
+                })
+                .cors(withDefaults());
 
-        httpSecurity.authorizeHttpRequests(http->http.requestMatchers("/api/**").permitAll());
-       // httpSecurity.authorizeHttpRequests(http->http.requestMatchers("/api/users/**").permitAll());
-        httpSecurity.authorizeHttpRequests(http->http.requestMatchers(HttpMethod.POST,"/auth/**").permitAll()); // permette a tutti di accedere ai path signUp e Login
-
-        httpSecurity.cors(Customizer.withDefaults());
         return httpSecurity.build();
-    };
+    }
 
-
-
-
-@Bean
-    public PasswordEncoder passwordEncoder(){
+    @Bean
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(11);
     }
 
-
-
-//BEAN PER ABILITARE CHIUNQUE A UTILIZZARE QUALSIASI SERVIZIO
     @Bean
-    public CorsConfigurationSource corsConfigurationSource(){
-
-    CorsConfiguration corsConfiguration = new CorsConfiguration();
-    corsConfiguration.setAllowedOrigins(List.of("*"));
-    corsConfiguration.setAllowedMethods(List.of("*"));
-
-
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);
-
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 }
