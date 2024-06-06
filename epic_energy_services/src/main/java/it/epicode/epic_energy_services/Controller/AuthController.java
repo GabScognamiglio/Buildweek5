@@ -3,19 +3,18 @@ package it.epicode.epic_energy_services.Controller;
 import it.epicode.epic_energy_services.DTO.UserDTO;
 import it.epicode.epic_energy_services.DTO.UserLoginDTO;
 import it.epicode.epic_energy_services.Exception.BadRequestException;
+import it.epicode.epic_energy_services.Security.AuthenticationResponse;
 import it.epicode.epic_energy_services.Service.AuthService;
 import it.epicode.epic_energy_services.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin(origins = "*")
 public class AuthController {
     @Autowired
     UserService userService;
@@ -32,7 +31,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody @Validated UserLoginDTO userLoginDTO, BindingResult bindingResult){
+    public AuthenticationResponse login(@RequestBody @Validated UserLoginDTO userLoginDTO, BindingResult bindingResult){
         if (bindingResult.hasErrors()){
             throw new BadRequestException(bindingResult.getAllErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).reduce("",(s, s2) -> s+s2 ));
         }

@@ -2,6 +2,7 @@ package it.epicode.epic_energy_services.Service;
 
 import it.epicode.epic_energy_services.DTO.UserLoginDTO;
 import it.epicode.epic_energy_services.Exception.UnauthorizedException;
+import it.epicode.epic_energy_services.Security.AuthenticationResponse;
 import it.epicode.epic_energy_services.Security.JwtTool;
 import it.epicode.epic_energy_services.entity.Cliente;
 import it.epicode.epic_energy_services.entity.User;
@@ -19,11 +20,19 @@ public class AuthService {
     private PasswordEncoder passwordEncoder;
 
 
-    public String authenticateUserAndCreateToken(UserLoginDTO userLoginDTO){
+    public AuthenticationResponse authenticateUserAndCreateToken(UserLoginDTO userLoginDTO){
      User user = userService.getUserByEmail(userLoginDTO.getEmail());
 
         if (passwordEncoder.matches(userLoginDTO.getPassword() ,user.getPassword())) {
-        return jwtTool.createToken(user); // metodo createToken vuole l'utente per creare il token
+
+            String token = jwtTool.createToken(user);
+            /*String role = user.getRole().toString();
+            int id = user.getId();
+            String name = jwtTool.createToken(user);
+            String surname = user.getRole().toString();
+            String email = jwtTool.createToken(user);*/
+
+            return new AuthenticationResponse(token,user);
         }else{
             throw  new UnauthorizedException("Dati errati, controllare i dati inseriti e prova nuovamente, se riscontri ancora problemi contatta l'assistenza di TicketGenius");
         }
