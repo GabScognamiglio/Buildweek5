@@ -36,7 +36,7 @@ public class ClienteService {
     private ClienteRepository clienteRepository;
 
     @Autowired
-    private  IndirizzoService indirizzoService;
+    private IndirizzoService indirizzoService;
 
     @Autowired
     private ComuneRepository comuneRepository;
@@ -48,60 +48,59 @@ public class ClienteService {
     private IndirizzoRepository indirizzoRepository;
 
 
-
-    public List<Cliente> clientiOrderByProvinciaSedeLegale(){
+    public List<Cliente> clientiOrderByProvinciaSedeLegale() {
         return clienteRepository.clientiOrderByProvinciaSedeLegale();
     }
-    public List<Cliente> clientiFilteredByFatturatoAnnuale(double fatturatoMin, double fatturatoMax){
-        return clienteRepository.clientiFilteredByFatturatoAnnuale(fatturatoMin,fatturatoMax);
+
+    public List<Cliente> clientiFilteredByFatturatoAnnuale(double fatturatoMin, double fatturatoMax) {
+        return clienteRepository.clientiFilteredByFatturatoAnnuale(fatturatoMin, fatturatoMax);
     }
 
-    public List<Cliente> getClientiByDataInserimento(LocalDate dataInserimento){
+    public List<Cliente> getClientiByDataInserimento(LocalDate dataInserimento) {
         return clienteRepository.findByDataInserimento(dataInserimento);
     }
 
-    public List<Cliente> getClientiByDataUltimoContatto(LocalDate dataUltimoContatto){
+    public List<Cliente> getClientiByDataUltimoContatto(LocalDate dataUltimoContatto) {
         return clienteRepository.findByDataUltimoContatto(dataUltimoContatto);
     }
 
 
-    public List<Cliente> getClientiByNameContaining(String parteDelNome){
+    public List<Cliente> getClientiByNameContaining(String parteDelNome) {
         return clienteRepository.findByRagioneSocialeContaining(parteDelNome);
     }
 
 
-    public Optional<Cliente> getClienteById(int id){
+    public Optional<Cliente> getClienteById(int id) {
         return clienteRepository.findById(id);
     }
 
 
-    public Page<Cliente> getClientiConPaginazione(int page, int size, String sortBy){
-        Pageable pageable = PageRequest.of(page,size, Sort.by(sortBy));
-        return  clienteRepository.findAll(pageable);
-    }
-    public List<Cliente> getClienti(){
-        return  clienteRepository.findAll();
+    public Page<Cliente> getClientiConPaginazione(int page, int size, String sortBy, String sortOrder) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortOrder), sortBy));
+        return clienteRepository.findAll(pageable);
     }
 
+    public List<Cliente> getClienti() {
+        return clienteRepository.findAll();
+    }
 
-    public String saveCliente(ClienteDto clienteDto){
 
+    public String saveCliente(ClienteDto clienteDto) {
 
-        Optional<Cliente> clienteOptional =  clienteRepository.findByEmail(clienteDto.getEmail());
+        Optional<Cliente> clienteOptional = clienteRepository.findByEmail(clienteDto.getEmail());
 
-        if(clienteOptional.isPresent()){
+        if (clienteOptional.isPresent()) {
             throw new BadRequestException("Questa email è già associata ad un account!");
-        }else {
+        } else {
             Cliente cliente = new Cliente();
-            //INFO CONTATTO
 
+            // INFO CONTATTO
             cliente.setNomeContatto(clienteDto.getNomeContatto());
             cliente.setCognomeContatto(clienteDto.getCognomeContatto());
             cliente.setEmailContatto(clienteDto.getEmailContatto());
             cliente.setTelefonoContatto(clienteDto.getTelefonoContatto());
 
-
-            //dati azienda
+            // Dati azienda
             cliente.setTipoCliente(clienteDto.getTipoCliente());
             cliente.setDataInserimento(LocalDate.now());
             cliente.setEmail(clienteDto.getEmail());
@@ -113,33 +112,41 @@ public class ClienteService {
 
             clienteRepository.save(cliente);
 
-            List<Indirizzo> indirizzi = clienteDto.getIndirizzi().stream().map(indirizzoDto -> {
-                Indirizzo indirizzo = new Indirizzo();
-                indirizzo.setVia(indirizzoDto.getVia());
-                indirizzo.setCap(indirizzoDto.getCap());
+            // Controllo indirizzi
+            long countIndirizziLegali = clienteDto.getIndirizzi().stream()
+                    .filter(indirizzo -> indirizzo.getTipoIndirizzo() == TipoIndirizzo.LEGALE)
+                    .count();
 
-                indirizzo.setLocalita(indirizzoDto.getLocalita());
-                indirizzo.setCivico(indirizzoDto.getCivico());
-                indirizzo.setTipoIndirizzo(indirizzoDto.getTipoIndirizzo());
-                indirizzo.setCliente(cliente);
+            if (countIndirizziLegali == 1) {
+                List<Indirizzo> indirizzi = clienteDto.getIndirizzi().stream().map(indirizzoDto -> {
+                    Indirizzo indirizzo = new Indirizzo();
+                    indirizzo.setVia(indirizzoDto.getVia());
+                    indirizzo.setCap(indirizzoDto.getCap());
+                    indirizzo.setLocalita(indirizzoDto.getLocalita());
+                    indirizzo.setCivico(indirizzoDto.getCivico());
+                    indirizzo.setTipoIndirizzo(indirizzoDto.getTipoIndirizzo());
+                    indirizzo.setCliente(cliente);
 
-                Optional<Comune> comuneOptional = comuneRepository.findByDenominazione(indirizzoDto.getComuneDenominazione());
-                if(comuneOptional.isPresent()){
-                    indirizzo.setComune(comuneOptional.get());
-                    indirizzoRepository.save(indirizzo);
-                      return indirizzo;
-                }
-                throw new NotFoundException("Comune non trovato");
-            }).collect(Collectors.toList());
+                    Optional<Comune> comuneOptional = comuneRepository.findByDenominazione(indirizzoDto.getComuneDenominazione());
+                    if (comuneOptional.isPresent()) {
+                        indirizzo.setComune(comuneOptional.get());
+                        indirizzoRepository.save(indirizzo);
+                        return indirizzo;
+                    } else {
+                        throw new NotFoundException("Comune non trovato");
+                    }
+                }).collect(Collectors.toList());
 
-            cliente.setIndirizzi(indirizzi);
-            clienteRepository.save(cliente);
-//            indirizzi.forEach(indirizzo -> indirizzo.setCliente(cliente));
-            //indirizzoRepository.saveAll(cliente.getIndirizzi());
-            return "Cliente con id " + cliente.getId()+ " salvato correttamente";
+                cliente.setIndirizzi(indirizzi);
+                clienteRepository.save(cliente);
+
+                return "Cliente con id " + cliente.getId() + " salvato correttamente";
+            } else {
+                throw new BadRequestException("È possibile avere solo un indirizzo legale.");
+            }
         }
-
     }
+
 
     public String patchPictureLogoAziendale(int id, MultipartFile foto) throws IOException {
         Optional<Cliente> clienteOptional = getClienteById(id);

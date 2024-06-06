@@ -1,5 +1,6 @@
 package it.epicode.epic_energy_services.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import it.epicode.epic_energy_services.Enums.TipoCliente;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -47,6 +48,7 @@ public class Cliente {
 
 
     @OneToMany(mappedBy = "cliente")
+    @JsonIgnore
     private List<Fattura> fatture;
 
 

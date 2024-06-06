@@ -1,5 +1,6 @@
 package it.epicode.epic_energy_services.repository;
 
+import it.epicode.epic_energy_services.Enums.StatoFattura;
 import it.epicode.epic_energy_services.entity.Cliente;
 import it.epicode.epic_energy_services.entity.Fattura;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,7 +16,7 @@ public interface FatturaRepository extends JpaRepository<Fattura, Integer> {
 
     public List<Fattura> findByCliente (Cliente cliente);
 
-    public List<Fattura> findByStatoFattura (String statoFattura);
+    public List<Fattura> findByStatoFattura (StatoFattura statoFattura);
 
     @Query("SELECT f FROM Fattura f WHERE f.data = :data")
     public List<Fattura> findByDataInserimento (@Param("data") LocalDate data);
@@ -24,7 +25,8 @@ public interface FatturaRepository extends JpaRepository<Fattura, Integer> {
 //    public List<Fattura> findByAnno(@Param("anno") int anno);
 
     //@Query("SELECT f FROM Fattura f WHERE f.dataInserimento BETWEEN :startDate AND :endDate")
-    @Query("SELECT f FROM Fattura f WHERE FUNCTION('YEAR', f.data) = :anno")
+    //@Query("SELECT f FROM Fattura f WHERE FUNCTION('YEAR', f.data) = :anno")
+    @Query("SELECT f FROM Fattura f WHERE EXTRACT(YEAR FROM f.data) = :anno")
     public List<Fattura> findByAnno(@Param("anno") int anno);
 
 

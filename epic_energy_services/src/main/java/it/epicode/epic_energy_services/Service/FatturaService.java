@@ -1,6 +1,7 @@
 package it.epicode.epic_energy_services.Service;
 
 import it.epicode.epic_energy_services.DTO.FatturaDto;
+import it.epicode.epic_energy_services.Enums.StatoFattura;
 import it.epicode.epic_energy_services.Exception.ClienteNotFoundException;
 import it.epicode.epic_energy_services.Exception.FatturaNotFoundException;
 import it.epicode.epic_energy_services.entity.Cliente;
@@ -30,7 +31,7 @@ public class FatturaService {
         return fatturaRepository.findByCliente(cliente);
     }
 
-    public List<Fattura> findFattureByStato(String statoFattura){
+    public List<Fattura> findFattureByStato(StatoFattura statoFattura){
         return fatturaRepository.findByStatoFattura(statoFattura);
     }
 

@@ -2,6 +2,7 @@ package it.epicode.epic_energy_services.Controller;
 
 import it.epicode.epic_energy_services.DTO.ClienteDto;
 import it.epicode.epic_energy_services.DTO.FatturaDto;
+import it.epicode.epic_energy_services.Enums.StatoFattura;
 import it.epicode.epic_energy_services.Exception.BadRequestException;
 import it.epicode.epic_energy_services.Exception.ClienteNotFoundException;
 import it.epicode.epic_energy_services.Exception.FatturaNotFoundException;
@@ -93,9 +94,9 @@ public class FatturaController {
     }
 
     /*-------Q2------*/
-    @GetMapping("/fattureByStato/{stato}")
+    @GetMapping("/fattureByStato/{statoFattura}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public List<Fattura> getFattureByStatoFattura(@PathVariable String statoFattura) {
+    public List<Fattura> getFattureByStatoFattura(@PathVariable("statoFattura") StatoFattura statoFattura) {
             return fatturaService.findFattureByStato(statoFattura);
     }
 
@@ -103,8 +104,8 @@ public class FatturaController {
 
     @GetMapping("/fattureByDataInserimento/{dataInserimento}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public List<Fattura> getFattureDataInserimento(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
-        return fatturaService.findFattureByDataInserimento(data);
+    public List<Fattura> getFattureDataInserimento(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInserimento) {
+        return fatturaService.findFattureByDataInserimento(dataInserimento);
     }
 
     /*-------Q4------*/

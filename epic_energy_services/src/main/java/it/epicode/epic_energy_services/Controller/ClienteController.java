@@ -40,8 +40,9 @@ public class ClienteController {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public Page<Cliente> getClienti(@RequestParam(defaultValue = "0") int page,
                                     @RequestParam(defaultValue = "10") int size,
-                                    @RequestParam(defaultValue = "id") String sortBy) {
-        return clienteService.getClientiConPaginazione(page, size, sortBy);
+                                    @RequestParam(defaultValue = "id") String sortBy,
+                                    @RequestParam(defaultValue = "desc") String sortOrder) {
+        return clienteService.getClientiConPaginazione(page, size, sortBy,sortOrder);
     }
 
     @GetMapping("/clienti/{id}")
@@ -75,7 +76,6 @@ public class ClienteController {
     }
 
 //LISTA 1
-
     /*--------Q5-----*/
     @GetMapping("/clientiByProvinciaSedeLegale")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")

@@ -1,6 +1,7 @@
 package it.epicode.epic_energy_services.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import it.epicode.epic_energy_services.Enums.StatoFattura;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -23,7 +24,7 @@ public class Fattura {
 
     @ManyToOne
     @JoinColumn(name = "cliente_id")
-    @JsonIgnore
+    @JsonIncludeProperties(value = {"id","ragioneSociale","email"})
     private Cliente cliente;
 
 }
