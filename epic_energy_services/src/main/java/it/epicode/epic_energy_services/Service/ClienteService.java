@@ -142,15 +142,13 @@ public class ClienteService {
                     }
                 }).collect(Collectors.toList());
 
-                cliente.setIndirizzi(indirizzi);
-                clienteRepository.save(cliente);
-
                 LocalDate oraCorrente =  LocalDate.now();
+                cliente.setIndirizzi(indirizzi);
+                cliente.setDataUltimoContatto(oraCorrente);
+                clienteRepository.save(cliente);
 
                 sendMailClienteAggiunto(cliente.getEmail());
                 sendMailClienteAggiunto(cliente.getPec());
-
-                cliente.setDataUltimoContatto(oraCorrente);
                 return "Cliente con id " + cliente.getId() + " salvato correttamente";
             } else {
                 throw new BadRequestException("È possibile avere solo un indirizzo legale.");
