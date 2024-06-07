@@ -20,12 +20,12 @@ public class AuthService {
     private PasswordEncoder passwordEncoder;
 
 
-    public AuthenticationResponse authenticateUserAndCreateToken(UserLoginDTO userLoginDTO){
-     User user = userService.getUserByEmail(userLoginDTO.getEmail());
+               public AuthenticationResponse authenticateUserAndCreateToken(UserLoginDTO userLoginDTO){
+                User user = userService.getUserByEmail(userLoginDTO.getEmail());
 
-        if (passwordEncoder.matches(userLoginDTO.getPassword() ,user.getPassword())) {
+                if (passwordEncoder.matches(userLoginDTO.getPassword() ,user.getPassword())) {
 
-            String token = jwtTool.createToken(user);
+                    String token = jwtTool.createToken(user);
             /*String role = user.getRole().toString();
             int id = user.getId();
             String name = jwtTool.createToken(user);

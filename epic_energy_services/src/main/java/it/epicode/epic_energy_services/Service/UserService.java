@@ -199,8 +199,8 @@ public class UserService {
     private void sendMailCreazioneProfilo(String email) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(email);
-        message.setSubject("Benvenuto su TicketGenius");
-        message.setText("Grazie per esserti registrato, sei pronto per vivere i migliori eventi del momento?");
+        message.setSubject("Account creato correttamente");
+        message.setText("Ora puo accedere al sistema");
 
         javaMailSenderImpl.send(message);
     }

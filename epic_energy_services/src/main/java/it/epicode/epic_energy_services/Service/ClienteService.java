@@ -21,6 +21,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -46,6 +48,9 @@ public class ClienteService {
 
     @Autowired
     private IndirizzoRepository indirizzoRepository;
+
+    @Autowired
+    private JavaMailSenderImpl javaMailSenderImpl;
 
 
     public List<Cliente> clientiOrderByProvinciaSedeLegale() {
@@ -140,6 +145,12 @@ public class ClienteService {
                 cliente.setIndirizzi(indirizzi);
                 clienteRepository.save(cliente);
 
+                LocalDate oraCorrente =  LocalDate.now();
+
+                sendMailClienteAggiunto(cliente.getEmail());
+                sendMailClienteAggiunto(cliente.getPec());
+
+                cliente.setDataUltimoContatto(oraCorrente);
                 return "Cliente con id " + cliente.getId() + " salvato correttamente";
             } else {
                 throw new BadRequestException("È possibile avere solo un indirizzo legale.");
@@ -172,6 +183,7 @@ public class ClienteService {
             throw new ClienteNotFoundException("Nessun cliente trovato con ID: "+id);
         }
     }
+
 
     public Cliente updateCliente(int id, ClienteDto clienteDto) {
         Optional<Cliente> clienteOptional = getClienteById(id);
@@ -220,5 +232,15 @@ public class ClienteService {
         } else {
             throw new ClienteNotFoundException("Nessun cliente trovato con ID: " + id);
         }
+    }
+
+
+    private void sendMailClienteAggiunto(String email) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(email);
+        message.setSubject("Benvenuto in Epic Energy System");
+        message.setText("I dati della sua azienda sono stati inseriti con successo, il team Epic Energy System la ringrazia per la fiducia");
+
+        javaMailSenderImpl.send(message);
     }
 }
